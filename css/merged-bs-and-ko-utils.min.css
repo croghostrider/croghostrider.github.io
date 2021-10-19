@@ -1,0 +1,266 @@
+/*!
+ * Snackbar: http://fezvrasta.github.io/snackbarjs/
+ * @copyright &copy; 2014 Federico Zivolo
+ */
+#snackbar-container {
+  position: fixed;
+  z-index: 99999;
+  bottom: 40px;
+  left: 5px;
+}
+.snackbar {
+  overflow: hidden;
+  clear: both;
+  min-width: 288px;
+  max-width: 568px;
+  cursor: pointer;
+  opacity: 0;
+}
+.snackbar.snackbar-opened {
+  height: auto;
+  opacity: 1;
+}
+@media (max-width: 767px) {
+  #snackbar-container {
+    left: 0 !important;
+    right: 0;
+    width: 100%;
+  }
+  #snackbar-container .snackbar {
+    min-width: 100%;
+  }
+  #snackbar-container [class="snackbar snackbar-opened"] ~ .snackbar.toast {
+    margin-top: 20px;
+  }
+  #snackbar-container [class="snackbar snackbar-opened"] {
+    border-radius: 0;
+    margin-bottom: 0;
+  }
+}
+.snackbar {
+  background-color: #222;
+  color: #fff;
+  font-size: 14px;
+  border-radius: 10px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+  height: 0;
+  -moz-transition: -moz-transform 0.2s ease-in-out, opacity 0.2s ease-in,
+    height 0s linear 0.2s, padding 0s linear 0.2s, height 0s linear 0.2s;
+  -webkit-transition: -webkit-transform 0.2s ease-in-out, opacity 0.2s ease-in,
+    height 0s linear 0.2s, padding 0s linear 0.2s, height 0s linear 0.2s;
+  transition: transform 0.2s ease-in-out, opacity 0.2s ease-in,
+    height 0s linear 0.2s, padding 0s linear 0.2s, height 0s linear 0.2s;
+  -moz-transform: translateY(200%);
+  -webkit-transform: translateY(200%);
+  transform: translateY(200%);
+}
+.snackbar.snackbar-opened {
+  padding: 14px 15px;
+  margin-bottom: 10px;
+  height: auto;
+  -moz-transition: -moz-transform 0.2s ease-in-out, opacity 0.2s ease-in,
+    height 0s linear 0.2s;
+  -webkit-transition: -webkit-transform 0.2s ease-in-out, opacity 0.2s ease-in,
+    height 0s linear 0.2s;
+  transition: transform 0.2s ease-in-out, opacity 0.2s ease-in,
+    height 0s linear 0.2s, height 0s linear 0.2s;
+  -moz-transform: none;
+  -webkit-transform: none;
+  transform: none;
+}
+.snackbar p .glyphicon {
+  font-size: 1.5em;
+  margin-right: 8px;
+  margin-top: -2px;
+  float: left;
+}
+.snackbar p {
+  margin: 0;
+}
+.snackbar.primary {
+  border-color: #337ab7;
+  background-color: #337ab7;
+  color: #fff;
+}
+.snackbar.success {
+  border-color: #d6e9c6;
+  background-color: #dff0d8;
+  color: #3c763d;
+}
+.snackbar.info {
+  border-color: #0bf;
+  background-color: #8df;
+  color: #1e5f80;
+}
+.snackbar.warning {
+  border-color: #a60;
+  background-color: orange;
+  color: #310;
+}
+.snackbar.danger {
+  border-color: #a00;
+  background-color: #c00;
+  color: #fff;
+}
+/*!
+ * @copyright &copy; Kartik Visweswaran, Krajee.com, 2014
+ * @version 1.4.0
+ *
+ * Bootstrap Popover Extended - Popover with modal behavior, styling enhancements and more.
+ *
+ * For more JQuery/Bootstrap plugins and demos visit http://plugins.krajee.com
+ * For more Yii related demos visit http://demos.krajee.com
+ */
+.popover {
+  padding: 0;
+}
+.popover-lg {
+  min-width: 480px;
+}
+.popover-md {
+  min-width: 350px;
+}
+.popover > .close {
+  float: right;
+  margin: 7px 9px 7px 7px;
+}
+.popover.top-right > .arrow,
+.popover.bottom-right > .arrow {
+  left: 90%;
+}
+.popover.popover-lg.top-right > .arrow,
+.popover.popover-lg.bottom-right > .arrow {
+  left: 94%;
+}
+.popover.top-left > .arrow,
+.popover.bottom-left > .arrow {
+  left: 10%;
+}
+.popover.popover-lg.top-left > .arrow,
+.popover.popover-lg.bottom-left > .arrow {
+  left: 6%;
+}
+.popover.left-top > .arrow,
+.popover.right-top > .arrow {
+  top: 10%;
+}
+.popover.left-bottom > .arrow,
+.popover.right-bottom > .arrow {
+  top: 90%;
+}
+.popover-default.bottom > .arrow:after {
+  border-bottom-color: #f7f7f7;
+}
+.popover-primary.bottom > .arrow:after {
+  border-bottom-color: #428bca;
+}
+.popover-success.bottom > .arrow:after {
+  border-bottom-color: #dff0d8;
+}
+.popover-danger.bottom > .arrow:after {
+  border-bottom-color: #f2dede;
+}
+.popover-warning.bottom > .arrow:after {
+  border-bottom-color: #fcf8e3;
+}
+.popover-info.bottom > .arrow:after {
+  border-bottom-color: #d9edf7;
+}
+.popover-default.left-top > .arrow:after {
+  border-left-color: #f7f7f7;
+}
+.popover-default.right-top > .arrow:after {
+  border-right-color: #f7f7f7;
+}
+.popover-primary.left-top > .arrow:after {
+  border-left-color: #428bca;
+}
+.popover-primary.right-top > .arrow:after {
+  border-right-color: #428bca;
+}
+.popover-success.left-top > .arrow:after {
+  border-left-color: #dff0d8;
+}
+.popover-success.right-top > .arrow:after {
+  border-right-color: #dff0d8;
+}
+.popover-danger.left-top > .arrow:after {
+  border-left-color: #f2dede;
+}
+.popover-danger.right-top > .arrow:after {
+  border-right-color: #f2dede;
+}
+.popover-warning.left-top > .arrow:after {
+  border-left-color: #fcf8e3;
+}
+.popover-warning.right-top > .arrow:after {
+  border-right-color: #fcf8e3;
+}
+.popover-info.left-top > .arrow:after {
+  border-left-color: #d9edf7;
+}
+.popover-info.right-top > .arrow:after {
+  border-right-color: #d9edf7;
+}
+.popover-default > .popover-title {
+  color: #333;
+  background-color: #f7f7f7;
+}
+.popover-primary > .popover-title {
+  color: #fff;
+  background-color: #428bca;
+  border: 2px solid #428bca;
+}
+.popover-success > .popover-title {
+  color: #3c763d;
+  background-color: #dff0d8;
+  border-bottom: 1px solid #d6e9c6;
+}
+.popover-info > .popover-title {
+  color: #31708f;
+  background-color: #d9edf7;
+  border-bottom: 1px solid #bce8f1;
+}
+.popover-warning > .popover-title {
+  color: #8a6d3b;
+  background-color: #fcf8e3;
+  border-bottom: 1px solid #faebcc;
+}
+.popover-danger > .popover-title {
+  color: #a94442;
+  background-color: #f2dede;
+  border-bottom: 1px solid #ebccd1;
+}
+.popover-footer {
+  padding: 4px;
+  background-color: #fbfbfb;
+  text-align: right;
+  border-top: 1px solid #ebebeb;
+  border-radius: 0 0 5px 5px;
+}
+.popover-footer .btn + .btn {
+  margin-bottom: 0;
+  margin-left: 4px;
+}
+.popover-footer .btn-group .btn + .btn {
+  margin-left: -1px;
+}
+.popover-footer .btn-block + .btn-block {
+  margin-left: 0;
+}
+.popover.has-footer.top > .arrow:after,
+.has-footer.popover.top > .arrow:after {
+  border-top-color: #fbfbfb;
+}
+.popover.has-footer.left-bottom > .arrow:after {
+  border-top-color: transparent;
+  border-left-color: #fbfbfb;
+}
+.popover.has-footer.right-bottom > .arrow:after {
+  border-top-color: transparent;
+  border-right-color: #fbfbfb;
+}
+.popover-loading {
+  padding: 30px;
+  background: url("./imgs/loading.gif") center center;
+}
