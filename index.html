@@ -1,0 +1,1567 @@
+<!DOCTYPE html>
+<html lang="en">
+<!--
+ * ==================================================================
+ * 3D SUN-PATH WEB APP.
+ * This work is protected by copyright laws and international treaties.
+ * Copyright (c) 2014-2018, Dr. Andrew J. Marsh.
+ * All Rights Reserved.
+ * ==================================================================
+ -->
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0001, minimum-scale=1.0001, maximum-scale=1.0001, user-scalable=no, shrink-to-fit=no"/>
+    <meta name="description" content="A dynamic 3D Sun-path experiment.">
+    <meta name="author" content="Dr.A.J.Marsh">
+
+    <title>PD: 3D Sun-Path</title>
+
+    <!--
+    /////////////////////////////////////////////////////////////////
+    // ICONS                                                       //
+    /////////////////////////////////////////////////////////////////
+    -->
+
+    <link rel="icon" href="icons/favicon.png" />
+    <link rel="icon" sizes="192x192" href="icons/touch-icon-192x192.png">
+    <link rel="apple-touch-icon-precomposed" sizes="180x180" href="icons/apple-touch-icon-180x180-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="152x152" href="icons/apple-touch-icon-152x152-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="icons/apple-touch-icon-144x144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="120x120" href="icons/apple-touch-icon-120x120-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="icons/apple-touch-icon-114x114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="76x76" href="icons/apple-touch-icon-76x76-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="icons/apple-touch-icon-72x72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="icons/apple-touch-icon-precomposed.png">
+
+    <!--
+    /////////////////////////////////////////////////////////////////
+    // EXTERNAL STYLESHEETS                                        //
+    /////////////////////////////////////////////////////////////////
+    -->
+
+    <!-- Include custom fonts -->
+    <link rel="stylesheet" type="text/css" href="./css/fonts/pd-icons.css?vpd-10303">
+
+    <!-- Include Leaflet Map styles -->
+    <link rel="stylesheet" type="text/css" href="https://unpkg.com/leaflet@1.4.0/dist/leaflet.css" crossorigin="" />
+    <link rel="stylesheet" type="text/css" href="https://unpkg.com/leaflet-control-geocoder@1.9.0/dist/Control.Geocoder.css" />
+
+    <!-- Include latest Bootstrap -->
+    <!-- link rel="stylesheet" type="text/css" href="./css/bootstrap-3.3.2.min.css?vpd-10303" -->
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+
+    <!-- Include Boostrap and Knockout plugins -->
+    <link rel="stylesheet" type="text/css" href="./css/merged-bs-and-ko-utils.min.css?vpd-10303" />
+
+    <!-- Include split-pane styles -->
+    <link rel="stylesheet" type="text/css" href="./css/split-pane.min.css?vpd-10303" />
+
+    <!-- Include my own bindings -->
+    <link rel="stylesheet" type="text/css" href="./sunpath3d.min.css?vpd-10161" />
+
+    <!--
+    /////////////////////////////////////////////////////////////////
+    // LOCAL CSS STYLES                                            //
+    /////////////////////////////////////////////////////////////////
+    -->
+
+    <style>
+
+        /* ----- App-Specific Styles ----- */
+
+        #canvas {
+            background-color: #eee;
+        }
+
+        #map-container {
+            height: 100%;
+            width: 100%;
+            padding: 0;
+            margin: 0;
+        }
+
+        .navbar {
+            padding-right: 0;
+            border-bottom: none;
+            /* background-color: #333; */
+            background-color: white;
+            margin-bottom: 0;
+        }
+
+        /* ----- Portrait/Landscape ----- */
+
+        #portrait-layout,
+        #landscape-layout {
+            display: none; /* Hide initially. */
+            box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            background-color: white;
+            border-top: 1px solid #eee;
+            height: calc(100% - 45px); /* Take off overlay-header */
+            width: 100%;
+        }
+
+        .split-pane-component {
+            overflow: hidden !important;
+            background-color: white;
+        }
+
+        .split-pane-divider {
+            background-color: #eee;
+        }
+
+        /* ----- orientation:portrait ----- */
+
+        #portrait-chart-panel {
+            bottom: 65%; /* Must be same */
+            margin-bottom: 5px;
+            width: 100%;
+        }
+
+        #portrait-canvas-divider {
+            bottom: 65%; /* Must be same */
+            height: 5px;
+        }
+
+        #portrait-canvas-panel {
+            height: 65%; /* Must be same */
+            width: 100%;
+        }
+
+        #portrait-map-panel {
+            margin-right: 5px;
+            height: 100%;
+            right: 50%;
+        }
+
+        #portrait-chart-divider {
+            right: 50%;
+            width: 5px;
+        }
+
+        #portrait-svg-panel {
+            background-color: #b3d1ff;
+            height: 100%;
+            width: 50%;
+        }
+
+        /* ----- orientation:landscape ----- */
+
+        #landscape-chart-panel {
+            right: 65%; /* Must be same */
+            margin-right: 5px;
+            height: 100%;
+        }
+
+        #landscape-canvas-divider {
+            right: 65%; /* Must be same */
+            width: 5px;
+        }
+
+        #landscape-canvas-panel {
+            width: 65%; /* Must be same */
+            height: 100%;
+        }
+
+        #landscape-map-panel {
+            margin-bottom: 5px;
+            width: 100%;
+            bottom: 50%;
+        }
+
+        #landscape-chart-divider {
+            bottom: 50%;
+            height: 5px;
+        }
+
+        #landscape-svg-panel {
+            background-color: #b3d1ff;
+            height: 50%;
+            width: 100%;
+        }
+
+        /* ----- SVG Chart ----- */
+
+        #svg {
+            height: 100%;
+            width: 100%;
+        }
+
+        /* ----- Navigation Bar ----- */
+
+        #overlay-header {
+            background-color: #eee;
+            padding: 0 5px;
+            height: 45px;
+        }
+
+        #overlay-header .navbar-form {
+            display: none; /* Hidden initially */
+        }
+
+        /* ----- Info Panel ----- */
+
+        #overlay-info {
+            width: auto;
+            display: none; /* Hidden initially */
+            z-index: 10;
+            background: none !important;
+            position: absolute;
+            right: 0px;
+            top: 45px;
+        }
+
+        #overlay-info {
+            padding: 5px;
+            font-size: 10pt; /* No smaller else tooltip shows incorrectly. */
+            -webkit-transition: opacity 0.25s ease-in-out;
+            -moz-transition: opacity 0.25s ease-in-out;
+            -ms-transition: opacity 0.25s ease-in-out;
+            -o-transition: opacity 0.25s ease-in-out;
+            transition: opacity 0.25s ease-in-out;
+            opacity: 0.6;
+        }
+
+        #overlay-info:hover {
+            opacity: 1.0;
+        }
+
+        #overlay-info .panel {
+            margin-bottom: 4px;
+        }
+
+        #overlay-info .panel .pd-panel-btn-container {
+            padding: 3px; /* Consistent row size with buttons. */
+        }
+
+        #overlay-info .panel .pd-panel-btn-container .form-control {
+            height: 31px !important; /* Consistent row size with buttons. */
+            padding: 2px 12px;
+        }
+
+        #overlay-info .panel-heading {
+            border-bottom: none !important;
+        }
+
+        #overlay-info .panel table {
+            margin-bottom: 0 !important;
+        }
+
+        #overlay-info .panel input[type=range] {
+            margin-bottom: 5px;
+        }
+
+        #overlay-info .panel-heading { /* Match table. */
+            background: url(./imgs/down.png) #eee;
+            background-position: right 50%;
+            background-repeat: no-repeat;
+            background-size: 20px;
+            min-width: 15em !important;
+            cursor: pointer;
+            padding: 5px;
+        }
+
+        #overlay-info .panel-heading.collapsed {
+            background-image: url(./imgs/up.png);
+        }
+
+        #overlay-info .pd-data-heading-col { /* Used to size the data table header column. */
+            width: 6em !important;
+        }
+
+        #overlay-info .pd-data-value-col { /* Used to size the data table header column. */
+            width: 9em !important;
+            text-align: right;
+        }
+
+        #overlay-info .pd-data-value-col .glyphicon {
+            margin-top: 0.1em;
+        }
+
+        /* ----- Notifications ----- */
+
+        #snackbar-container {
+            bottom: 0px;
+        }
+
+        /* ----- Specific Popovers ----- */
+
+        #popover-view {
+            margin-left: -18px;
+        }
+
+        #popover-view div.arrow {
+            left: 13%;
+        }
+
+        #popover-display {
+            margin-left: 66px;
+        }
+
+        #popover-display div.arrow {
+            left: 29%;
+        }
+
+        #popover-sunpath {
+            margin-left: 15px;
+        }
+
+        #popover-sunpath div.arrow {
+            left: 45%;
+        }
+
+        #popover-datetime {
+            margin-left: 99px;
+        }
+
+        #popover-datetime div.arrow {
+            left: 61%;
+        }
+
+        #popover-location {
+            margin-left: 49px;
+        }
+
+        #popover-location div.arrow {
+            left: 77%;
+        }
+
+        #popover-info {
+            width: 480px;
+        }
+
+        #popover-info .scroll-pane {
+            overflow: auto;
+            padding-right: 8px;
+            margin-right: -8px;
+            height: 380px;
+        }
+
+        .popover-content dl.instructions {
+            margin-left: 1.5em;
+            margin-bottom: 1em;
+        }
+
+        .popover-content dl.instructions dt {
+            margin-top: 0.5em;
+        }
+
+        /* ----- Checkbox Panels ----- */
+
+        #popover-animate .popover-content {
+            padding: 0 14px;
+        }
+
+        /* ----- Maps Panel ----- */
+
+        #map {
+            height: 100%;
+            width: 100%;
+        }
+
+        #latlng-text {
+            font-size: 11px;
+            position: absolute;
+            text-shadow: 0 0 0.25em #FFF, 0 0 0.25em #FFF, 0 0 0.25em #FFF;
+            padding: 1px 5px 0 5px;
+            z-index: 1000;
+            bottom: 16px;
+            right: 5px;
+        }
+
+        /* ----- Floating Panels ----- */
+
+        #chart-header {
+            height: 0;
+            min-height: 0;
+            overflow: visible;
+            display: none; /* Hidden initially */
+            z-index: 100;
+            background: none;
+            position: absolute;
+            padding: 0 5px 0 0;
+            left: 0px;
+            top: 0px;
+            -webkit-transition: opacity 0.25s ease-in-out;  /* Saf3.2+, Chrome */
+            -moz-transition: opacity 0.25s ease-in-out;  /* FF4+ */
+            -ms-transition: opacity 0.25s ease-in-out;  /* IE10? */
+            -o-transition: opacity 0.25s ease-in-out;  /* Opera 10.5+ */
+            transition: opacity 0.25s ease-in-out;
+            opacity: 0.75;
+        }
+
+        #chart-header:hover {
+            opacity: 1.0;
+        }
+
+        #chart-header .btn-default {
+            font-weight: bold;
+            margin-top: 5px;
+        }
+
+        #chart-header .dropdown {
+            padding-bottom: 2px;
+        }
+
+        /* ----- Fixed Header Table ----- */
+
+        table.table-fixed-head {
+            border-collapse: collapse;
+            overflow-y: auto;
+        }
+
+        table.table-fixed-head thead {
+            background: #fff;
+            border-bottom: none;
+            border-top: none;
+        }
+
+        table.table-fixed-head thead tr,
+        table.table-fixed-head thead th {
+            background: #fff;
+            position: sticky;
+            top: 0;
+        }
+
+        table.table-fixed-head thead tr.top0 th {
+            top: 0;
+        }
+
+        table.table-fixed-head thead tr.top1 th {
+            background: "#f4f4f4";
+            position: sticky;
+            top: 28px;
+        }
+
+        table.table-fixed-head thead tr.top2 th {
+            background: "#f4f4f4";
+            position: sticky;
+            top: 56px;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+    <!--
+    /////////////////////////////////////////////////////////////////
+    // INITIAL LOADING MESSAGE                                     //
+    /////////////////////////////////////////////////////////////////
+    -->
+
+    <!-- PD:BEGIN:HTML:LoadingMessage -->
+    <div id="loading-message">
+        <div class="panel">
+            <h4 id="loading-message-title">
+                <img class="loader-icon" src="imgs/loader.gif" width="24" height="24" title="Loading..." />
+                <strong>Loading - please wait...</strong>
+            </h4>
+            <p class="normal">
+                This page requires a reasonably modern <strong>HTML5</strong> browser
+                <br />with both <strong>Javascript</strong> and <strong>WebGL</strong> enabled.
+            </p>
+            <img class="browser-logo" src="imgs/browsers.png" title="Opera, Chrome, Firefox, Safari 7 and IE 11." />
+            <p class="normal">
+                If this message is not soon replaced by an interactive 3D model,
+                <br />then it is likely that your browser does not support this web app.
+                <br />Check your <a href="http://webmasters.stackexchange.com/questions/8525/how-to-open-the-javascript-console-in-different-browsers" class="external" target="_blank">JavaScript Console</a>
+                for specific error messages.
+            </p>
+        </div>
+    </div><!-- PD:END:HTML:LoadingMessage -->
+
+    <!--
+    /////////////////////////////////////////////////////////////////
+    // PAGE CONTAINER                                              //
+    /////////////////////////////////////////////////////////////////
+    -->
+
+    <!-- Main Page Container -->
+    <div id="container" class="container-fluid">
+
+        <!-- Header Overlay -->
+        <div id="overlay-header" class="toolbar-default">
+
+            <form id="navbar-toolbar" class="navbar-form pull-left" role="group">
+
+                <div class="btn-group btn-group-toolbar" role="group">
+                    <button id="btn-title" type="button" class="btn btn-default btn-title" disabled>SUN-PATH:</button>
+                    <button type="button" class="btn btn-default" title="Undo" data-bind="click: UndoManager.undo, enable: UndoManager.canUndo">
+                        <span class="icon icon-undo" aria-hidden="true"></span>
+                    </button>
+                    <button type="button" class="btn btn-default" title="Redo" data-bind="click: UndoManager.redo, enable: UndoManager.canRedo" >
+                        <span class="icon icon-redo" aria-hidden="true"></span>
+                    </button>
+                </div>
+
+                <div id="btns-sunpath" class="btn-group btn-group-toolbar">
+
+                    <div class="btn-group" role="group">
+                        <button type="button" class="btn btn-default pd-toolbar-icon dropdown-toggle" data-toggle="dropdown" aria-expanded="true" title="Shadow Model">
+                            <span class="icon icon-building-3d"></span><span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu" role="menu" style="width: 16em;">
+                            <li role="presentation" class="dropdown-header">Shadow Model</li>
+                            <li role="presentation"><a role="menuitem" tabindex="-1" data-bind="click: Manager.selectModelFile">Load OBJ, STL or PLY...</a></li>
+                            <li role="presentation" class="divider"></li>
+                            <li role="presentation"><a role="menuitem" tabindex="-1" data-bind="click: Model.reverseNormals">Reverse Normals</a></li>
+                            <li role="presentation"><a role="menuitem" tabindex="-1" data-bind="click: Model.reverseTriangles">Reverse Face Winding</a></li>
+                            <li role="presentation"><a role="menuitem" tabindex="-1" data-bind="click: Model.sitOnGround">Sit on Ground Plane</a></li>
+                            <li role="presentation"><a role="menuitem" tabindex="-1" data-bind="click: Model.swapYZ">Swap Y and Z Axis</a></li>
+                            <li role="presentation"><a role="menuitem" tabindex="-1" data-bind="click: Model.mirrorY">Mirror in Y Axis</a></li>
+                        </ul>
+                    </div>
+
+                    <div class="btn-group" role="group">
+                        <button type="button" class="btn btn-default pd-toolbar-icon dropdown-toggle" data-toggle="dropdown" aria-expanded="true" title="Map Settings">
+                            <span class="icon icon-map"></span><span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu" role="menu">
+                            <li role="presentation" class="dropdown-header">Map Services</li>
+                            <li role="presentation">
+                                <a role="menuitem" tabindex="-1" data-bind="radioMenuItem: Model.mapTiles, radioValue: 'Wikimedia'">
+                                    <span class="icon"></span> Wikimedia Maps</span>
+                                </a>
+                            </li>
+                            <li role="presentation">
+                                <a role="menuitem" tabindex="-1" data-bind="radioMenuItem: Model.mapTiles, radioValue: 'OSM'">
+                                    <span class="icon"></span> OpenStreetMap: Standard</span>
+                                </a>
+                            </li>
+                            <li role="presentation">
+                                <a role="menuitem" tabindex="-1" data-bind="radioMenuItem: Model.mapTiles, radioValue: 'OSM:B&W'">
+                                    <span class="icon"></span> OpenStreetMap: Black & White</span>
+                                </a>
+                            </li>
+                            <li role="presentation">
+                                <a role="menuitem" tabindex="-1" data-bind="radioMenuItem: Model.mapTiles, radioValue: 'OSM:Mapnik'">
+                                    <span class="icon"></span> OpenStreetMap: Mapnik</span>
+                                </a>
+                            </li>
+                            <li role="presentation">
+                                <a role="menuitem" tabindex="-1" data-bind="radioMenuItem: Model.mapTiles, radioValue: 'Stamen:Lite'">
+                                    <span class="icon"></span> Stamen: TonerLite</span>
+                                </a>
+                            </li>
+                            <li role="presentation">
+                                <a role="menuitem" tabindex="-1" data-bind="radioMenuItem: Model.mapTiles, radioValue: 'Stamen:Terrain'">
+                                    <span class="icon"></span> Stamen: Terrain</span>
+                                </a>
+                            </li>
+                            <li role="presentation">
+                                <a role="menuitem" tabindex="-1" data-bind="radioMenuItem: Model.mapTiles, radioValue: 'ESRI:Street'">
+                                    <span class="icon"></span> ESRI: Street Map</span>
+                                </a>
+                            </li>
+                            <li role="presentation">
+                                <a role="menuitem" tabindex="-1" data-bind="radioMenuItem: Model.mapTiles, radioValue: 'ESRI:Satelite'">
+                                    <span class="icon"></span> ESRI: Satelite Map</span>
+                                </a>
+                            </li>
+                            <li role="presentation">
+                                <a role="menuitem" tabindex="-1" data-bind="radioMenuItem: Model.mapTiles, radioValue: 'ESRI:NatGeo'">
+                                    <span class="icon"></span> ESRI: National Geographic</span>
+                                </a>
+                            </li>
+                            <li role="presentation">
+                                <a role="menuitem" tabindex="-1" data-bind="radioMenuItem: Model.mapTiles, radioValue: 'CartoDB:Voyager'">
+                                    <span class="icon"></span> CartoDB: Voyager Map</span>
+                                </a>
+                            </li>
+                            <li role="presentation" class="divider"></li>
+                            <li role="presentation">
+                                <a role="menuitem" tabindex="-1" data-bind="click: ModalMap.reCenter">
+                                    Center Map on Pin
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="btn-group" role="group">
+                        <button type="button" class="btn btn-default pd-toolbar-icon dropdown-toggle" data-toggle="dropdown" aria-expanded="true" title="Map Settings">
+                            <span class="icon icon-table"></span><span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu" role="menu">
+                            <li role="presentation" class="dropdown-header">Tabulated Data</li>
+                            <li role="presentation">
+                                <a role="menuitem" tabindex="-1" data-bind="click: Manager.showAnnualSolarTable">Annual Solar Tables...</a>
+                            </li>
+                            <li role="presentation">
+                                <a role="menuitem" tabindex="-1" data-bind="click: Manager.showDailySolarTable">Daily Solar Tables...</a>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="btn-group" role="group">
+                        <button type="button" class="btn btn-default pd-toolbar-icon dropdown-toggle" data-toggle="dropdown" aria-expanded="true" title="Settings Data">
+                            <span class="icon icon-json-edit"></span><span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu" role="menu">
+                            <li role="presentation" class="dropdown-header">Settings Data</li>
+                            <li role="presentation">
+                                <a role="menuitem" tabindex="-1" data-bind="click: Manager.selectSettingsFile">Load Settings...</a>
+                            </li>
+                            <li role="presentation">
+                                <a role="menuitem" tabindex="-1" data-bind="click: Manager.showSaveSettings">Save Settings...</a>
+                            </li>
+                            <li role="presentation" class="divider"></li>
+                            <li role="presentation">
+                                <a role="menuitem" tabindex="-1" data-toggle="modal" data-target="#modal-data">Edit Settings as JSON...</a>
+                            </li>
+                            <li role="presentation" class="divider"></li>
+                            <li role="presentation">
+                                <a role="menuitem" tabindex="-1" data-bind="click: Manager.storeSettings">Store Settings as Default...</a>
+                            </li>
+                            <li role="presentation">
+                                <a role="menuitem" tabindex="-1" data-bind="click: Manager.clearSettings">Clear Default Settings...</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div id="btns-datestimes" class="btn-group btn-group-toolbar">
+                    <div class="btn-group" role="group">
+                        <button id="btn-dates" type="button" class="btn btn-default pd-toolbar-icon dropdown-toggle" data-toggle="dropdown" aria-expanded="true" title="Useful dates (Y)">
+                            <i class="icon icon-calendar"></i><span class="caret dropdown"></span>
+                        </button>
+                        <ul class="dropdown-menu" role="menu" aria-labelledby="btn-dates" style="width: 16em;">
+                            <li role="presentation" class="dropdown-header">Useful Dates<span class="pull-right small">Y</span></li>
+                            <li role="presentation"><a role="menuitem" tabindex="-1" data-bind="click: DateTime.setUsefulDate.bind($data, 0);">Summer Solstice<span class="pull-right small">7</span></a></li>
+                            <li role="presentation"><a role="menuitem" tabindex="-1" data-bind="click: DateTime.setUsefulDate.bind($data, 1);">Autumn/Fall Equinox<span class="pull-right small">8</span></a></li>
+                            <li role="presentation"><a role="menuitem" tabindex="-1" data-bind="click: DateTime.setUsefulDate.bind($data, 2);">Winter Solstice<span class="pull-right small">9</span></a></li>
+                            <li role="presentation"><a role="menuitem" tabindex="-1" data-bind="click: DateTime.setUsefulDate.bind($data, 3);">Spring/Vernal Equinox<span class="pull-right small">0</span></a></li>
+                        </ul>
+                    </div>
+                    <div class="btn-group" role="group">
+                        <button id="btn-times" type="button" class="btn btn-default pd-toolbar-icon dropdown-toggle" data-toggle="dropdown" aria-expanded="true" title="Useful times (T)">
+                            <i class="icon icon-time"></i><span class="caret dropdown"></span>
+                        </button>
+                        <ul class="dropdown-menu" role="menu" aria-labelledby="btn-times" style="width: 19em;">
+                            <li role="presentation" class="dropdown-header">Useful Times<span class="pull-right small">T</span></li>
+                            <li role="presentation"><a role="menuitem" tabindex="-1" data-bind="click: DateTime.setUsefulTime.bind($data, 0);">Astronomical Twilight at Dawn<span class="pull-right small"><i class="glyphicon glyphicon-arrow-up"></i>1</span></a></li>
+                            <li role="presentation"><a role="menuitem" tabindex="-1" data-bind="click: DateTime.setUsefulTime.bind($data, 1);">Nautical Twilight at Dawn<span class="pull-right small"><i class="glyphicon glyphicon-arrow-up"></i>2</span></a></li>
+                            <li role="presentation"><a role="menuitem" tabindex="-1" data-bind="click: DateTime.setUsefulTime.bind($data, 2);">Civil Twilight at Dawn<span class="pull-right small"><i class="glyphicon glyphicon-arrow-up"></i>3</span></a></li>
+                            <li role="presentation" class="divider"></li>
+                            <li role="presentation"><a role="menuitem" tabindex="-1" data-bind="click: DateTime.setUsefulTime.bind($data, 3);">Sunrise &nbsp;<span class="small" data-bind="text: DateTime.dayOfYear.sunriseTime"></span><span class="pull-right small"><i class="glyphicon glyphicon-arrow-up"></i>4</span></a></li>
+                            <li role="presentation"><a role="menuitem" tabindex="-1" data-bind="click: DateTime.setUsefulTime.bind($data, 4);">Local Noon &nbsp;<span class="small">12:00</span><span class="pull-right small"><i class="glyphicon glyphicon-arrow-up"></i>5</span></a></li>
+                            <li role="presentation"><a role="menuitem" tabindex="-1" data-bind="click: DateTime.setUsefulTime.bind($data, 5);">Solar Noon &nbsp;<span class="small" data-bind="text: DateTime.dayOfYear.solarNoon"></span><span class="pull-right small"><i class="glyphicon glyphicon-arrow-up"></i>6</span></a></li>
+                            <li role="presentation"><a role="menuitem" tabindex="-1" data-bind="click: DateTime.setUsefulTime.bind($data, 6);">Sunset &nbsp;<span class="small" data-bind="text: DateTime.dayOfYear.sunsetTime"></span><span class="pull-right small"><i class="glyphicon glyphicon-arrow-up"></i>7</span></a></li>
+                            <li role="presentation" class="divider"></li>
+                            <li role="presentation"><a role="menuitem" tabindex="-1" data-bind="click: DateTime.setUsefulTime.bind($data, 7);">Civil Twilight at Dusk<span class="pull-right small"><i class="glyphicon glyphicon-arrow-up"></i>8</span></a></li>
+                            <li role="presentation"><a role="menuitem" tabindex="-1" data-bind="click: DateTime.setUsefulTime.bind($data, 8);">Nautical Twilight at Dusk<span class="pull-right small"><i class="glyphicon glyphicon-arrow-up"></i>9</span></a></li>
+                            <li role="presentation"><a role="menuitem" tabindex="-1" data-bind="click: DateTime.setUsefulTime.bind($data, 9);">Astronomical Twilight at Dusk<span class="pull-right small"><i class="glyphicon glyphicon-arrow-up"></i>0</span></a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="btn-group btn-group-toolbar">
+                    <button id="btn-play" type="button" class="btn btn-default pd-toolbar-icon" data-bind="click: Animation.play, enable: Animation.canAnimate" title="Start animating (P)"><span id="btn-play-icon" class="icon icon-play"></span></button>
+                    <button type="button" class="btn btn-default pd-toolbar-icon popover-toggle" data-toggle="popover-x" data-target="#popover-animate" data-placement="bottom" title="Animation settings"><span class="icon icon-cog"></span><span class="caret dropdown"></span></button>
+                </div>
+
+            </form>
+
+            <form class="navbar-form pull-right" role="group">
+                <div class="btn-group btn-group-toolbar">
+                    <button type="button" class="btn btn-default pd-toolbar-icon popover-toggle" data-toggle="popover-x" data-target="#popover-view" data-placement="bottom bottom-left" title="View settings"><span class="icon icon-view-3d"></span><span class="caret dropdown"></span></button>
+                    <button type="button" class="btn btn-default pd-toolbar-icon popover-toggle" data-toggle="popover-x" data-target="#popover-display" data-placement="bottom" title="Display settings"><span class="icon icon-display"></span><span class="caret dropdown"></span></button>
+                    <button type="button" class="btn btn-default pd-toolbar-icon popover-toggle" data-toggle="popover-x" data-target="#popover-sunpath" data-placement="bottom" title="Sun-path settings"><span class="icon icon-sunpath"></span><span class="caret dropdown"></span></button>
+                    <button type="button" class="btn btn-default pd-toolbar-icon popover-toggle" data-toggle="popover-x" data-target="#popover-datetime" data-placement="bottom bottom-right" title="Date/time panel"><span class="icon icon-datetime"></span><span class="caret dropdown"></span></button>
+                    <button type="button" class="btn btn-default pd-toolbar-icon popover-toggle" data-toggle="popover-x" data-target="#popover-location" data-placement="bottom bottom-right" title="Location panel"><span class="icon icon-globe"></span><span class="caret dropdown"></span></button>
+                    <button type="button" class="btn btn-default pd-toolbar-icon popover-toggle" data-toggle="popover-x" data-target="#popover-info" data-placement="bottom bottom-right" title="Information panel"><span class="icon icon-info"></span><span class="caret dropdown"></span></button>
+                </div>
+            </form>
+
+        </div>
+
+        <!-- ======================================================== -->
+
+        <!-- PORTRAIT PAGE LAYOUT -->
+        <div class="split-pane horizontal-percent" id="portrait-layout">
+            <div class="split-pane-component" id="portrait-chart-panel">
+                <div class="split-pane vertical-percent">
+                    <div class="split-pane-component" id="portrait-map-panel">
+                        <div id="map-container">
+                            <div id="map" class="no-select no-touch loading"></div>
+                            <div id="latlng-text" data-bind="text: ModalMap.dynamicMarkerPosition.formatter" title="Geographic coordinates">0.00, 0.00</div>
+                        </div>
+                    </div>
+                    <div class="split-pane-divider" id="portrait-chart-divider"></div>
+                    <div class="split-pane-component" id="portrait-svg-panel">
+                        <svg id="svg" class="svg-chart no-select no-touch" viewBox="0 0 364 359" preserveAspectRatio="none"></svg>
+                    </div>
+                </div>
+            </div>
+            <div class="split-pane-divider" id="portrait-canvas-divider"></div>
+            <div class="split-pane-component" id="portrait-canvas-panel">
+                <canvas id="canvas" class="no-select no-touch"></canvas>
+            </div>
+        </div>
+
+        <!-- LANDSCAPE PAGE LAYOUT -->
+        <div class="split-pane vertical-percent" id="landscape-layout">
+            <div class="split-pane-component" id="landscape-chart-panel">
+                <div class="split-pane horizontal-percent">
+                    <div class="split-pane-component" id="landscape-map-panel">
+                        <!-- Placeholder for '#map-container' -->
+                    </div>
+                    <div class="split-pane-divider" id="landscape-chart-divider"></div>
+                    <div class="split-pane-component" id="landscape-svg-panel">
+                        <!-- Placeholder for '#svg' -->
+                    </div>
+                </div>
+            </div>
+            <div class="split-pane-divider" id="landscape-canvas-divider"></div>
+            <div class="split-pane-component" id="landscape-canvas-panel">
+                <!-- Placeholder for '#canvas' -->
+            </div>
+        </div>
+
+        <!-- ======================================================== -->
+
+        <!-- Info Overlay -->
+        <div id="overlay-info" class="hidden-xs">
+
+            <div id="panel-location" class="panel panel-default">
+                <div class="panel-heading no-select collapsed" data-toggle="collapse" data-target="#content-location">
+                    <strong>GEOGRAPHIC LOCATION</strong>
+                </div>
+                <div id="content-location" class="collapse">
+                    <table class="table table-condensed no-touch">
+                        <tr id="row-latitude">
+                            <td data-bind="valueSlider: Location.latitude, min: -90.0, max: 90.0, step: 0.1, minor: 1.0, major: 15.0, width: 200">
+                                Latitude:
+                                <span class="pd-data-value" data-bind="angleText: Location.latitude"></span>
+                            </td>
+                        </tr>
+                        <tr id="row-longitude">
+                            <td data-bind="valueSlider: Location.longitude, min: -180.0, max: 180.0, step: 0.1, minor: 1.0, major: 15.0, width: 200">
+                                Longitude:
+                                <span class="pd-data-value" data-bind="angleText: Location.longitude"></span>
+                            </td>
+                        </tr>
+                        <tr id="row-timezone">
+                            <td data-bind="valueSlider: Location.timezone, min: -12.0, max: 12.0, step: 1.0, minor: 1.0, major: 1.0, width: 200">
+                                Timezone:
+                                <span class="pd-data-value" data-bind="text: Location.timezone.formatter"></span>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+            <div id="panel-datetime" class="panel panel-default">
+                <div class="panel-heading no-select collapsed" data-toggle="collapse" data-target="#content-datetime">
+                    <strong>DATE AND TIME</strong>
+                </div>
+                <div id="content-datetime" class="collapse">
+                    <table class="table table-condensed no-touch">
+                        <tr id="row-dayofyear">
+                            <td data-bind="valueSlider: DateTime.dayOfYear, min: 0, max: 365, step: 1, minor: 1, major: 14, width: 200">
+                                Date:
+                                <span class="pd-data-value" data-bind="text: DateTime.dayOfYear.formatter"></span>
+                            </td>
+                        </tr>
+                        <tr id="row-timeofday">
+                            <td data-bind="valueSlider: DateTime.timeOfDay, min: 0, max: 1440, step: 1, minor: 5, major: 30, width: 200">
+                                Time:
+                                <span class="pd-data-value" data-bind="text: DateTime.timeOfDay.formatter"></span>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+            <div id="panel-sunpos" class="panel panel-default">
+                <div class="panel-heading no-select collapsed" data-toggle="collapse" data-target="#content-sunpos">
+                    <strong>SOLAR INFORMATION</strong>
+                </div>
+                <div id="content-sunpos" class="collapse in">
+                    <table class="table table-condensed">
+                        <tr>
+                            <td class="pd-data-heading-col">
+                                Azi / Alt:
+                            </td>
+                            <td class="pd-data-value-col">
+                                <span class="pd-data-value" data-bind="text: DateTime.timeOfDay.azimuthAngle"></span> /
+                                <span class="pd-data-value" data-bind="text: DateTime.timeOfDay.altitudeAngle"></span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="pd-data-heading-col">
+                                Rise / Set:
+                            </td>
+                            <td class="pd-data-value-col">
+                                <span class="pd-data-value" data-bind="text: DateTime.dayOfYear.sunriseTime"></span> /
+                                <span class="pd-data-value" data-bind="text: DateTime.dayOfYear.sunsetTime"></span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="pd-data-heading-col">
+                                Daylight:
+                            </td>
+                            <td class="pd-data-value-col">
+                                <span class="pd-data-value" data-bind="text: DateTime.dayOfYear.dayLength"></span> Hrs
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+            <div id="panel-twilight" class="panel panel-default">
+                <div class="panel-heading no-select collapsed" data-toggle="collapse" data-target="#content-twilight">
+                    <strong>TWILIGHT TIMES</strong>
+                </div>
+                <div id="content-twilight" class="collapse">
+                    <table class="table table-condensed">
+                        <tr>
+                            <td class="pd-data-heading-col">
+                                Civil:
+                            </td>
+                            <td class="pd-data-value-col">
+                                <span class="pd-data-value" data-bind="text: DateTime.dayOfYear.civilTwilight"></span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="pd-data-heading-col">
+                                Nautical:
+                            </td>
+                            <td class="pd-data-value-col">
+                                <span class="pd-data-value" data-bind="text: DateTime.dayOfYear.nauticalTwilight"></span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="pd-data-heading-col">
+                                Astronom.:
+                            </td>
+                            <td class="pd-data-value-col">
+                                <span class="pd-data-value" data-bind="text: DateTime.dayOfYear.astronomicalTwilight"></span>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+        </div> <!-- /Info Overlay -->
+
+    </div> <!-- /Main Page Container -->
+
+    <!--
+    /////////////////////////////////////////////////////////////////
+    // FLOATING PANELS                                             //
+    /////////////////////////////////////////////////////////////////
+    -->
+
+    <div id="chart-header">
+        <div class="dropdown pull-right">
+            <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" aria-expanded="true">
+                <span data-bind="text: Chart.projectionName"></span>
+                <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu" role="menu" aria-labelledby="dropMenuChartTye" data-bind="radioMenuItem: Chart.projectionTypeString">
+                <li role="presentation">
+                    <a role="menuitem" tabindex="-1" data-value="-2"><span class="icon"></span> Day-Length Chart</a>
+                </li>
+                <li role="presentation">
+                    <a role="menuitem" tabindex="-1" data-value="-1"><span class="icon"></span> Analemma Chart</a>
+                </li>
+                <li role="presentation" class="divider"></li>
+                <li role="presentation">
+                    <a role="menuitem" tabindex="-1" data-value="3"><span class="icon"></span> Cartesian Sun-Path</a>
+                </li>
+                <li role="presentation">
+                    <a role="menuitem" tabindex="-1" data-value="2"><span class="icon"></span> Stereographic Sun-Path</a>
+                </li>
+                <li role="presentation">
+                    <a role="menuitem" tabindex="-1" data-value="1"><span class="icon"></span> Equidistant Sun-Path</a>
+                </li>
+                <li role="presentation">
+                    <a role="menuitem" tabindex="-1" data-value="0"><span class="icon"></span> Spherical Sun-Path</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <!--
+    /////////////////////////////////////////////////////////////////
+    // POPOVERS                                                    //
+    /////////////////////////////////////////////////////////////////
+    -->
+
+    <div id="popover-container">
+
+        <!-- PopoverX: Animate -->
+        <div id="popover-animate" class="popover popover-default">
+            <div class="arrow"></div>
+            <h2 class="popover-title">ANIMATION<span class="close" data-dismiss="popover-x" aria-hidden="true">&times;</span></h2>
+            <div class="popover-content">
+                <div class="checkbox">
+                    <label><input type="checkbox" data-bind="checked: Animation.animateTime">Animate Time</label>
+                </div>
+                <div class="checkbox">
+                    <label><input type="checkbox" data-bind="checked: Animation.animateDate">Animate Date</label>
+                </div>
+                <hr />
+                <div class="checkbox">
+                    <label><input type="checkbox" data-bind="checked: Animation.animateLatitude">Animate Latitude</label>
+                </div>
+                <div class="checkbox">
+                    <label><input type="checkbox" data-bind="checked: Animation.animateLongitude">Animate Longitude</label>
+                </div>
+                <hr />
+                <h5>Speed
+                    <small class="pull-right italic" style="margin-top: 3px"><span data-bind="fixedPrecision: { value: Animation.speed, precision: 1 }"></span></small>
+                </h5>
+                <input type="range" class="numeric" style="width: 100%; margin: -4px 0 9px 0;" data-bind="attr: { min: 0.0, max: 20.0, step: 0.1 }, numericSlider: Animation.speed" />
+                <hr />
+                <div class="checkbox">
+                    <label><input type="checkbox" data-bind="checked: Animation.daylightOnly">Daytime Only</label>
+                </div>
+            </div>
+        </div> <!-- /PopoverX: Animate -->
+
+        <!-- PD:BEGIN:HTML:PopoverView -->
+        <div id="popover-view" class="popover popover-default">
+            <div class="arrow"></div>
+            <h2 class="popover-title">3D VIEW SETTINGS<span class="close" data-dismiss="popover-x" aria-hidden="true">&times;</span></h2>
+            <div class="popover-content">
+                <table style="margin-bottom: 10px">
+                    <tr>
+                        <td colspan="3">
+                            <h4>Projection <small class="pull-right">(Shortcut keys: 1 to 6)</small></h4>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="3">
+                            <div class="btn-group center-block" role="group">
+                                <button type="button" class="btn btn-default pd-toolbar-icon" style="width:49px" data-bind="radioButton: Camera.viewType, radioValue: 0" title="Perspective view (1).">
+                                    <span class="icon icon-box-persp"></span>
+                                </button>
+                                <button type="button" class="btn btn-default pd-toolbar-icon" style="width:48px" data-bind="radioButton: Camera.viewType, radioValue: 1" title="Axonometrix view (2).">
+                                    <span class="icon icon-view-axon"></span>
+                                </button>
+                                <button type="button" class="btn btn-default pd-toolbar-icon" style="width:49px" data-bind="radioButton: Camera.viewType, radioValue: 2" title="Plan view (3).">
+                                    <span class="icon icon-view-plan"></span>
+                                </button>
+                                <button type="button" class="btn btn-default pd-toolbar-icon" style="width:48px" data-bind="radioButton: Camera.viewType, radioValue: 3" title="Front view (4).">
+                                    <span class="icon icon-view-front"></span>
+                                </button>
+                                <button type="button" class="btn btn-default pd-toolbar-icon" style="width:49px" data-bind="radioButton: Camera.viewType, radioValue: 4" title="Side view (5).">
+                                    <span class="icon icon-view-side"></span>
+                                </button>
+                                <button type="button" class="btn btn-default pd-toolbar-icon" style="width:48px" data-bind="radioButton: Camera.viewType, radioValue: 5" title="View from Sun (6).">
+                                    <span class="icon icon-view-sun"></span>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr style="height:4px">
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="btn-group" role="group">
+                                <button type="button" class="btn btn-default btn-increment" data-bind="repeatButton: Camera.incrementZoom.bind($data, -10)"><span class="glyphicon glyphicon-minus"></span></button>
+                                <button type="button" class="btn btn-default btn-increment" data-bind="repeatButton: Camera.incrementZoom.bind($data, -1)"><small><span class="glyphicon glyphicon-minus"></span></small></button>
+                            </div>
+                        </td>
+                        <td class="pad-sides-4px">
+                            <button type="button" class="btn btn-default btn-center" onclick="App.Camera.setZoom(0)">Fit to Canvas</button>
+                        </td>
+                        <td>
+                            <div class="btn-group" role="group">
+                                <button type="button" class="btn btn-default btn-increment" data-bind="repeatButton: Camera.incrementZoom.bind($data, 1)"><small><span class="glyphicon glyphicon-plus"></span></small></button>
+                                <button type="button" class="btn btn-default btn-increment" data-bind="repeatButton: Camera.incrementZoom.bind($data, 10)"><span class="glyphicon glyphicon-plus"></span></button>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+                <numeric-slider params="value: Camera.viewAzimuth, title: 'Eye Azimuth', units: '(CCW from +X Axis)', min: -180.0, max: 180.0, step: 0.1, largeIncrement: 150, decimals: 2, suffix: '&deg;'"></numeric-slider>
+                <numeric-slider params="value: Camera.viewAltitude, title: 'Eye Altitude', units: '(Up from the horizontal)', min: -90.0, max: 90.0, step: 0.1, largeIncrement: 150, decimals: 2, suffix: '&deg;'"></numeric-slider>
+                <numeric-slider params="value: Camera.viewAngle, title: 'Field of View', min: 0.0, max: 160.0, step: 0.1, largeIncrement: 150, decimals: 2, suffix: '&deg;'"></numeric-slider>
+            </div>
+        </div>
+        <!-- PD:END:HTML:PopoverView -->
+
+        <!-- PD:BEGIN:HTML:PopoverDisplay -->
+        <div id="popover-display" class="popover popover-default">
+            <div class="arrow"></div>
+            <h2 class="popover-title">DISPLAY SETTINGS<span class="close" data-dismiss="popover-x" aria-hidden="true">&times;</span></h2>
+            <div class="popover-content">
+                <numeric-slider params="value: Display.surfaceOpacity, title: 'Surface Opacity', min: 0.0, max: 1.0, step: 0.001, decimals: 3"></numeric-slider>
+                <numeric-slider params="value: Display.outlineOpacity, title: 'Outline Opacity', min: 0.0, max: 1.0, step: 0.001, decimals: 3"></numeric-slider>
+                <numeric-slider params="value: Display.surfaceShininess, title: 'Material Shininess', min: 0, max: 500, step: 1, decimals: 0, largeIncrement: 50, smallIncrement: 5"></numeric-slider>
+                <numeric-slider params="value: Display.ambientFactor, title: 'Ambient Light', min: 0.0, max: 1.0, step: 0.001, decimals: 3"></numeric-slider>
+            </div>
+        </div>
+        <!-- PD:END:HTML:PopoverDisplay -->
+
+        <!-- PopoverX: Sunpath -->
+        <div id="popover-sunpath" class="popover popover-default">
+            <div class="arrow"></div>
+            <h2 class="popover-title">SUN-PATH SETTINGS<span class="close" data-dismiss="popover-x" aria-hidden="true">&times;</span></h2>
+            <div class="popover-content">
+                <div class="row">
+                    <div class="col-xs-6">
+                        <h4>Indicators</h4>
+                        <div class="checkbox">
+                            <label><input type="checkbox" data-bind="checked: SunPath.showSunPos">Sun Position</label>
+                        </div>
+                        <div class="checkbox">
+                            <label><input type="checkbox" data-bind="checked: SunPath.showSunDirection">Sun Direction</label>
+                        </div>
+                        <div class="checkbox">
+                            <label><input type="checkbox" data-bind="checked: SunPath.showSunAngles">Sun Angles</label>
+                        </div>
+                        <div class="checkbox">
+                            <label><input type="checkbox" data-bind="checked: Model.shadowsShow">Shadows</label>
+                        </div>
+                    </div>
+                    <div class="col-xs-6">
+                        <h4>Path Lines</h4>
+                        <div class="checkbox">
+                            <label><input type="checkbox" data-bind="checked: SunPath.showSunPath">Current Day</label>
+                        </div>
+                        <div class="checkbox">
+                            <label><input type="checkbox" data-bind="checked: SunPath.showAnnualLines">Annual Lines</label>
+                        </div>
+                        <div class="checkbox">
+                            <label><input type="checkbox" data-bind="checked: SunPath.showAnnualArea">Annual Area</label>
+                        </div>
+                        <div class="checkbox">
+                            <label><input type="checkbox" data-bind="checked: SunPath.showAxis">Base Axis</label>
+                        </div>
+                    </div>
+                </div>
+                <hr />
+                <div>
+                    <numeric-slider params="value: Location.northOffset, title: 'North Offset', units: '(CW from +Y Axis)', min: -180.0, max: 180.0, step: 0.1, largeIncrement: 150, decimals: 2, suffix: '&deg;'"></numeric-slider>
+                    <numeric-slider params="value: SunPath.radiusSlider, title: 'Diagram Size', units: '(Relative to model)', min: 0.0, max: 200, step: 0.1, largeIncrement: 100, decimals: 1, suffix: '%'"></numeric-slider>
+                </div>
+            </div>
+        </div> <!-- /PopoverX: Sunpath -->
+
+        <!-- PD:BEGIN:HTML:PopoverDateTime -->
+        <div id="popover-datetime" class="popover popover-default">
+            <div class="arrow"></div>
+            <h2 class="popover-title">DATE AND TIME<span class="close" data-dismiss="popover-x" aria-hidden="true">&times;</span></h2>
+            <div class="popover-content">
+                <table width="100%">
+                    <tr>
+                        <td width="50%">
+                            <div class="dropdown pull-left">
+                                <button id="useful-dates" class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="true" style="width: 10em">
+                                    Useful Dates <span class="caret"></span>
+                                </button>
+                                <ul class="dropdown-menu" role="menu" aria-labelledby="useful-dates">
+                                    <li role="presentation"><a role="menuitem" tabindex="-1" data-bind="click: DateTime.setUsefulDate.bind($data, 0);">Summer Solstice</a></li>
+                                    <li role="presentation"><a role="menuitem" tabindex="-1" data-bind="click: DateTime.setUsefulDate.bind($data, 1);">Autumn/Fall Equinox</a></li>
+                                    <li role="presentation"><a role="menuitem" tabindex="-1" data-bind="click: DateTime.setUsefulDate.bind($data, 2);">Winter Solstice</a></li>
+                                    <li role="presentation"><a role="menuitem" tabindex="-1" data-bind="click: DateTime.setUsefulDate.bind($data, 3);">Spring/Vernal Equinox</a></li>
+                                </ul>
+                            </div>
+                        </td>
+                        <td width="50%">
+                            <div class="dropdown pull-right">
+                                <button id="useful-times" class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="true" style="width: 10em;">
+                                    Useful Times <span class="caret"></span>
+                                </button>
+                                <ul class="dropdown-menu" role="menu" aria-labelledby="useful-times">
+                                    <li role="presentation"><a role="menuitem" tabindex="-1" data-bind="click: DateTime.setUsefulTime.bind($data, 0);">Astronomical Twilight at Dawn</a></li>
+                                    <li role="presentation"><a role="menuitem" tabindex="-1" data-bind="click: DateTime.setUsefulTime.bind($data, 1);">Nautical Twilight at Dawn</a></li>
+                                    <li role="presentation"><a role="menuitem" tabindex="-1" data-bind="click: DateTime.setUsefulTime.bind($data, 2);">Civil Twilight at Dawn</a></li>
+                                    <li role="presentation" class="divider"></li>
+                                    <li role="presentation"><a role="menuitem" tabindex="-1" data-bind="click: DateTime.setUsefulTime.bind($data, 3);">Sunrise &nbsp;<span class="small" data-bind="text: DateTime.dayOfYear.sunriseTime"></span></a></li>
+                                    <li role="presentation"><a role="menuitem" tabindex="-1" data-bind="click: DateTime.setUsefulTime.bind($data, 4);">Local Noon &nbsp;<span class="small">12:00</span></a></li>
+                                    <li role="presentation"><a role="menuitem" tabindex="-1" data-bind="click: DateTime.setUsefulTime.bind($data, 5);">Solar Noon &nbsp;<span class="small" data-bind="text: DateTime.dayOfYear.solarNoon"></span></a></li>
+                                    <li role="presentation"><a role="menuitem" tabindex="-1" data-bind="click: DateTime.setUsefulTime.bind($data, 6);">Sunset &nbsp;<span class="small" data-bind="text: DateTime.dayOfYear.sunsetTime"></span></a></li>
+                                    <li role="presentation" class="divider"></li>
+                                    <li role="presentation"><a role="menuitem" tabindex="-1" data-bind="click: DateTime.setUsefulTime.bind($data, 7);">Civil Twilight at Dusk</a></li>
+                                    <li role="presentation"><a role="menuitem" tabindex="-1" data-bind="click: DateTime.setUsefulTime.bind($data, 8);">Nautical Twilight at Dusk</a></li>
+                                    <li role="presentation"><a role="menuitem" tabindex="-1" data-bind="click: DateTime.setUsefulTime.bind($data, 9);">Astronomical Twilight at Dusk</a></li>
+                                </ul>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+                <hr />
+                <numeric-slider id="slider-dayofyear" params="value: DateTime.dayOfYear, title: 'Day of the Year', min: 0, max: 365, step: 1"></numeric-slider>
+                <p class="text-under-slider">
+                    Ordinal day of the year: <span data-bind="text: DateTime.dayOfYear"></span>
+                </p>
+                <numeric-slider id="slider-timeofday" params="value: DateTime.timeOfDay, title: 'Time of Day', min: 0, max: 1440, step: 1"></numeric-slider>
+                <p class="text-under-slider">
+                    Sunrise: <span data-bind="text: DateTime.dayOfYear.sunriseTime"></span>, &nbsp; Sunset: <span data-bind="text: DateTime.dayOfYear.sunsetTime"></span>
+                </p>
+            </div>
+        </div>
+        <!-- PD:END:HTML:PopoverDateTime -->
+
+        <!-- PD:BEGIN:HTML:PopoverLocation -->
+        <div id="popover-location" class="popover popover-default">
+            <div class="arrow"></div>
+            <h2 class="popover-title">GEOGRAPHIC LOCATION<span class="close" data-dismiss="popover-x" aria-hidden="true">&times;</span></h2>
+            <div class="popover-content">
+                <input type="submit" id="button-location" class="form-control fit-width" onclick="App.getGeoLocation();" value="Use Your Current Location" />
+                <hr />
+                <numeric-slider id="slider-latitude" params="value: Location.latitude, title: 'Latitude', min: -90.0, max: 90.0, step: 0.1, decimals: 2"></numeric-slider>
+                <numeric-slider id="slider-longitude" params="value: Location.longitude, title: 'Longitude', min: -180.0, max: 180.0, step: 0.1, decimals: 2"></numeric-slider>
+                <h4>Time Zone</h4>
+                <select name="timezone" id="input-timezone" class="form-control fit-width margin-bot-4px" data-bind="numeric: Location.timezone">
+                    <option timeZoneId="01" gmtAdjustment="GMT-12:00" useDaylightTime="0" value="-12">(GMT-12:00) International Date Line West</option>
+                    <option timeZoneId="02" gmtAdjustment="GMT-11:00" useDaylightTime="0" value="-11">(GMT-11:00) Midway Island, Samoa</option>
+                    <option timeZoneId="03" gmtAdjustment="GMT-10:00" useDaylightTime="0" value="-10">(GMT-10:00) Hawaii</option>
+                    <option timeZoneId="04" gmtAdjustment="GMT-09:00" useDaylightTime="1" value="-9">(GMT-09:00) Alaska</option>
+                    <option timeZoneId="05" gmtAdjustment="GMT-08:00" useDaylightTime="1" value="-8">(GMT-08:00) Pacific Time (US & Canada)</option>
+                    <option timeZoneId="06" gmtAdjustment="GMT-08:00" useDaylightTime="1" value="-8">(GMT-08:00) Tijuana, Baja California</option>
+                    <option timeZoneId="09" gmtAdjustment="GMT-07:00" useDaylightTime="1" value="-7">(GMT-07:00) Mountain Time (US & Canada)</option>
+                    <option timeZoneId="07" gmtAdjustment="GMT-07:00" useDaylightTime="0" value="-7">(GMT-07:00) Arizona</option>
+                    <option timeZoneId="08" gmtAdjustment="GMT-07:00" useDaylightTime="1" value="-7">(GMT-07:00) Chihuahua, La Paz, Mazatlan</option>
+                    <option timeZoneId="11" gmtAdjustment="GMT-06:00" useDaylightTime="1" value="-6">(GMT-06:00) Central Time (US & Canada)</option>
+                    <option timeZoneId="10" gmtAdjustment="GMT-06:00" useDaylightTime="0" value="-6">(GMT-06:00) Central America</option>
+                    <option timeZoneId="12" gmtAdjustment="GMT-06:00" useDaylightTime="1" value="-6">(GMT-06:00) Guadalajara, Mexico City, Monterrey</option>
+                    <option timeZoneId="13" gmtAdjustment="GMT-06:00" useDaylightTime="0" value="-6">(GMT-06:00) Saskatchewan</option>
+                    <option timeZoneId="15" gmtAdjustment="GMT-05:00" useDaylightTime="1" value="-5">(GMT-05:00) Eastern Time (US & Canada)</option>
+                    <option timeZoneId="14" gmtAdjustment="GMT-05:00" useDaylightTime="0" value="-5">(GMT-05:00) Bogota, Lima, Quito, Rio Branco</option>
+                    <option timeZoneId="16" gmtAdjustment="GMT-05:00" useDaylightTime="1" value="-5">(GMT-05:00) Indiana (East)</option>
+                    <option timeZoneId="17" gmtAdjustment="GMT-04:00" useDaylightTime="1" value="-4">(GMT-04:00) Atlantic Time (Canada)</option>
+                    <option timeZoneId="18" gmtAdjustment="GMT-04:00" useDaylightTime="0" value="-4">(GMT-04:00) Caracas, La Paz</option>
+                    <option timeZoneId="19" gmtAdjustment="GMT-04:00" useDaylightTime="0" value="-4">(GMT-04:00) Manaus</option>
+                    <option timeZoneId="20" gmtAdjustment="GMT-04:00" useDaylightTime="1" value="-4">(GMT-04:00) Santiago</option>
+                    <option timeZoneId="21" gmtAdjustment="GMT-03:30" useDaylightTime="1" value="-3.5">(GMT-03:30) Newfoundland</option>
+                    <option timeZoneId="22" gmtAdjustment="GMT-03:00" useDaylightTime="1" value="-3">(GMT-03:00) Brasilia</option>
+                    <option timeZoneId="23" gmtAdjustment="GMT-03:00" useDaylightTime="0" value="-3">(GMT-03:00) Buenos Aires, Georgetown</option>
+                    <option timeZoneId="24" gmtAdjustment="GMT-03:00" useDaylightTime="1" value="-3">(GMT-03:00) Greenland</option>
+                    <option timeZoneId="25" gmtAdjustment="GMT-03:00" useDaylightTime="1" value="-3">(GMT-03:00) Montevideo</option>
+                    <option timeZoneId="26" gmtAdjustment="GMT-02:00" useDaylightTime="1" value="-2">(GMT-02:00) Mid-Atlantic</option>
+                    <option timeZoneId="27" gmtAdjustment="GMT-01:00" useDaylightTime="0" value="-1">(GMT-01:00) Cape Verde Is.</option>
+                    <option timeZoneId="28" gmtAdjustment="GMT-01:00" useDaylightTime="1" value="-1">(GMT-01:00) Azores</option>
+                    <option timeZoneId="30" gmtAdjustment="GMT+00:00" useDaylightTime="1" value="0">(GMT+00:00) Greenwich Mean Time : Dublin, Edinburgh, Lisbon, London</option>
+                    <option timeZoneId="29" gmtAdjustment="GMT+00:00" useDaylightTime="0" value="0">(GMT+00:00) Casablanca, Monrovia, Reykjavik</option>
+                    <option timeZoneId="31" gmtAdjustment="GMT+01:00" useDaylightTime="1" value="1">(GMT+01:00) Amsterdam, Berlin, Bern, Rome, Stockholm, Vienna</option>
+                    <option timeZoneId="32" gmtAdjustment="GMT+01:00" useDaylightTime="1" value="1">(GMT+01:00) Belgrade, Bratislava, Budapest, Ljubljana, Prague</option>
+                    <option timeZoneId="33" gmtAdjustment="GMT+01:00" useDaylightTime="1" value="1">(GMT+01:00) Brussels, Copenhagen, Madrid, Paris</option>
+                    <option timeZoneId="34" gmtAdjustment="GMT+01:00" useDaylightTime="1" value="1">(GMT+01:00) Sarajevo, Skopje, Warsaw, Zagreb</option>
+                    <option timeZoneId="35" gmtAdjustment="GMT+01:00" useDaylightTime="1" value="1">(GMT+01:00) West Central Africa</option>
+                    <option timeZoneId="37" gmtAdjustment="GMT+02:00" useDaylightTime="1" value="2">(GMT+02:00) Athens, Bucharest, Istanbul</option>
+                    <option timeZoneId="36" gmtAdjustment="GMT+02:00" useDaylightTime="1" value="2">(GMT+02:00) Amman</option>
+                    <option timeZoneId="38" gmtAdjustment="GMT+02:00" useDaylightTime="1" value="2">(GMT+02:00) Beirut</option>
+                    <option timeZoneId="39" gmtAdjustment="GMT+02:00" useDaylightTime="1" value="2">(GMT+02:00) Cairo</option>
+                    <option timeZoneId="40" gmtAdjustment="GMT+02:00" useDaylightTime="0" value="2">(GMT+02:00) Harare, Pretoria</option>
+                    <option timeZoneId="41" gmtAdjustment="GMT+02:00" useDaylightTime="1" value="2">(GMT+02:00) Helsinki, Kyiv, Riga, Sofia, Tallinn, Vilnius</option>
+                    <option timeZoneId="42" gmtAdjustment="GMT+02:00" useDaylightTime="1" value="2">(GMT+02:00) Jerusalem</option>
+                    <option timeZoneId="43" gmtAdjustment="GMT+02:00" useDaylightTime="1" value="2">(GMT+02:00) Minsk</option>
+                    <option timeZoneId="44" gmtAdjustment="GMT+02:00" useDaylightTime="1" value="2">(GMT+02:00) Windhoek</option>
+                    <option timeZoneId="45" gmtAdjustment="GMT+03:00" useDaylightTime="0" value="3">(GMT+03:00) Kuwait, Riyadh, Baghdad</option>
+                    <option timeZoneId="46" gmtAdjustment="GMT+03:00" useDaylightTime="1" value="3">(GMT+03:00) Moscow, St. Petersburg, Volgograd</option>
+                    <option timeZoneId="47" gmtAdjustment="GMT+03:00" useDaylightTime="0" value="3">(GMT+03:00) Nairobi</option>
+                    <option timeZoneId="48" gmtAdjustment="GMT+03:00" useDaylightTime="0" value="3">(GMT+03:00) Tbilisi</option>
+                    <option timeZoneId="49" gmtAdjustment="GMT+03:30" useDaylightTime="1" value="3.5">(GMT+03:30) Tehran</option>
+                    <option timeZoneId="50" gmtAdjustment="GMT+04:00" useDaylightTime="0" value="4">(GMT+04:00) Abu Dhabi, Muscat</option>
+                    <option timeZoneId="51" gmtAdjustment="GMT+04:00" useDaylightTime="1" value="4">(GMT+04:00) Baku</option>
+                    <option timeZoneId="52" gmtAdjustment="GMT+04:00" useDaylightTime="1" value="4">(GMT+04:00) Yerevan</option>
+                    <option timeZoneId="53" gmtAdjustment="GMT+04:30" useDaylightTime="0" value="4.5">(GMT+04:30) Kabul</option>
+                    <option timeZoneId="55" gmtAdjustment="GMT+05:00" useDaylightTime="0" value="5">(GMT+05:00) Islamabad, Karachi, Tashkent</option>
+                    <option timeZoneId="54" gmtAdjustment="GMT+05:00" useDaylightTime="1" value="5">(GMT+05:00) Yekaterinburg</option>
+                    <option timeZoneId="56" gmtAdjustment="GMT+05:30" useDaylightTime="0" value="5.5">(GMT+05:30) Sri Jayawardenapura</option>
+                    <option timeZoneId="57" gmtAdjustment="GMT+05:30" useDaylightTime="0" value="5.5">(GMT+05:30) Chennai, Kolkata, Mumbai, New Delhi</option>
+                    <option timeZoneId="58" gmtAdjustment="GMT+05:45" useDaylightTime="0" value="5.75">(GMT+05:45) Kathmandu</option>
+                    <option timeZoneId="60" gmtAdjustment="GMT+06:00" useDaylightTime="0" value="6">(GMT+06:00) Astana, Dhaka</option>
+                    <option timeZoneId="59" gmtAdjustment="GMT+06:00" useDaylightTime="1" value="6">(GMT+06:00) Almaty, Novosibirsk</option>
+                    <option timeZoneId="61" gmtAdjustment="GMT+06:30" useDaylightTime="0" value="6.5">(GMT+06:30) Yangon (Rangoon)</option>
+                    <option timeZoneId="62" gmtAdjustment="GMT+07:00" useDaylightTime="0" value="7">(GMT+07:00) Bangkok, Hanoi, Jakarta</option>
+                    <option timeZoneId="63" gmtAdjustment="GMT+07:00" useDaylightTime="1" value="7">(GMT+07:00) Krasnoyarsk</option>
+                    <option timeZoneId="64" gmtAdjustment="GMT+08:00" useDaylightTime="0" value="8">(GMT+08:00) Beijing, Chongqing, Hong Kong, Urumqi</option>
+                    <option timeZoneId="65" gmtAdjustment="GMT+08:00" useDaylightTime="0" value="8">(GMT+08:00) Kuala Lumpur, Singapore</option>
+                    <option timeZoneId="66" gmtAdjustment="GMT+08:00" useDaylightTime="0" value="8">(GMT+08:00) Irkutsk, Ulaan Bataar</option>
+                    <option timeZoneId="67" gmtAdjustment="GMT+08:00" useDaylightTime="0" value="8">(GMT+08:00) Perth</option>
+                    <option timeZoneId="68" gmtAdjustment="GMT+08:00" useDaylightTime="0" value="8">(GMT+08:00) Taipei</option>
+                    <option timeZoneId="69" gmtAdjustment="GMT+09:00" useDaylightTime="0" value="9">(GMT+09:00) Osaka, Sapporo, Tokyo</option>
+                    <option timeZoneId="70" gmtAdjustment="GMT+09:00" useDaylightTime="0" value="9">(GMT+09:00) Seoul</option>
+                    <option timeZoneId="71" gmtAdjustment="GMT+09:00" useDaylightTime="1" value="9">(GMT+09:00) Yakutsk</option>
+                    <option timeZoneId="72" gmtAdjustment="GMT+09:30" useDaylightTime="0" value="9.5">(GMT+09:30) Adelaide</option>
+                    <option timeZoneId="73" gmtAdjustment="GMT+09:30" useDaylightTime="0" value="9.5">(GMT+09:30) Darwin</option>
+                    <option timeZoneId="74" gmtAdjustment="GMT+10:00" useDaylightTime="0" value="10">(GMT+10:00) Brisbane</option>
+                    <option timeZoneId="75" gmtAdjustment="GMT+10:00" useDaylightTime="1" value="10">(GMT+10:00) Canberra, Melbourne, Sydney</option>
+                    <option timeZoneId="76" gmtAdjustment="GMT+10:00" useDaylightTime="1" value="10">(GMT+10:00) Hobart</option>
+                    <option timeZoneId="77" gmtAdjustment="GMT+10:00" useDaylightTime="0" value="10">(GMT+10:00) Guam, Port Moresby</option>
+                    <option timeZoneId="78" gmtAdjustment="GMT+10:00" useDaylightTime="1" value="10">(GMT+10:00) Vladivostok</option>
+                    <option timeZoneId="79" gmtAdjustment="GMT+11:00" useDaylightTime="1" value="11">(GMT+11:00) Magadan, Solomon Is., New Caledonia</option>
+                    <option timeZoneId="80" gmtAdjustment="GMT+12:00" useDaylightTime="1" value="12">(GMT+12:00) Auckland, Wellington</option>
+                    <option timeZoneId="81" gmtAdjustment="GMT+12:00" useDaylightTime="0" value="12">(GMT+12:00) Fiji, Kamchatka, Marshall Is.</option>
+                    <option timeZoneId="82" gmtAdjustment="GMT+13:00" useDaylightTime="0" value="13">(GMT+13:00) Nuku'alofa</option>
+                </select>
+            </div>
+        </div>
+        <!-- PD:END:HTML:PopoverLocation -->
+
+        <!-- PopoverX: Info -->
+        <div id="popover-info" class="popover popover-default popover-lg">
+            <div class="arrow"></div>
+            <h2 class="popover-title">INFORMATION<span class="close" data-dismiss="popover-x" aria-hidden="true">&times;</span></h2>
+            <div class="popover-content">
+                <ul class="nav nav-tabs">
+                    <li class="nav active"><a href="#tab-about" data-toggle="tab">About</a>
+                    </li>
+                    <li class="nav"><a href="#tab-model" data-toggle="tab">3D View</a>
+                    </li>
+                    <li class="nav"><a href="#tab-data" data-toggle="tab">Data Entry</a>
+                    </li>
+                    <li class="nav"><a href="#tab-credits" data-toggle="tab">Credits</a>
+                    </li>
+                </ul>
+                <div class="tab-content">
+                    <div class="tab-pane fade in active scroll-pane" id="tab-about">
+                        <h3>Overview</h3>
+                        <p class="text-justify">The aim of this app is to demonstrate the relationship between geographic
+                            location and solar position throughout the year. You can use the map to drag the location around
+                            and interactively see how the Sun-path diagram and shadow projections change. You can also directly
+                            relate the 3D Sun-path and day-length, as well as a range of different 2D Sun-path projections.
+                        </p>
+                        <h3>Background</h3>
+                        <p class="text-justify">This started out as an experiment to see just how responsive I could make
+                            the generation and display of 3D Sun-path diagrams and shadow projections using JavaScript and WebGL.
+                            I'm actually quite stunned as, even before any optimisation whatsoever, I found that I could build and
+                            rebuild the entire Sun-path mesh on every change in pretty well real time. Sure this was on an i7
+                            processor, but it meant that the core technologies were not going to be the kind of bottleneck
+                            that I thought they'd be.
+                        </p>
+                        <p class="text-justify">As it turned out, there was scope for some pretty fundamental optimisations, so now it's even quick
+                            enough on an iPad as well as most of my old Android tablets.
+                        </p>
+                        <h3>SVG and WebGL</h3>
+                        <p class="text-justify">The marriage of WebGL for 3D visualisation and SVG for 2D data presentation also turns out to be
+                            a pretty happy one. The core ideas when working in both are actually pretty similar - building up
+                            a set of visual components that are cached and rendered separately (OpenGL vertex buffer objects and
+                            SVG elements respectively). Any complex calculations in Javascript need only be done once to build
+                            up each visual component, or to rebuild if it physically changes. The actual rendering of that cached
+                            element is then done by a much faster lower-level process (OpenGL/GPU and the SVG engine respectively).
+                        </p>
+                        <h4>Optimsation Potential</h4>
+                        <p class="text-justify">Thus, for the kinds of animated 2D charts I need, SVG seems to have much more optimisation potential
+                            than using a HTML5 canvas element. As the canvas element is pixel-based, any content change usually
+                            requires a full redraw of all chart components, each being re-described and/or re-generated in
+                            your own Javascript code. If any components require complex calculation or involve detailed curves,
+                            you have to devise your own caching system as this all has to be redone for every redraw.
+                        </p>
+                        <p class="text-justify">With SVG charts, you only need to re-describe and/or re-generate those components that actually
+                            change on each redraw. All other previously defined components are automatically re-rendered by
+                            the SVG engine, which is a core part of the browser itself (running as native code) so is
+                            significantly faster than working in Javascript.
+                        </p>
+                        <p class="text-justify">Thus, the key to fast animations is to offload as much work as possible onto the SVG engine, or
+                            even the browser rendering engine. This can be done by, for example, transforming components instead
+                            of regenerating them, using CSS3 animations and transitions, interpolating between pre-built elements
+                            instead of regenerating new elements each time, etc. For me, this is the really fun bit as you often
+                            have to completely rethink how to do things before you finally get that vital Eureka moment.
+                        </p>
+                        <p><a href="http://andrewmarsh.com/about" target="_blank">&copy; Dr. Andrew J. Marsh, 2014.</a>
+                        </p>
+                    </div>
+                    <div class="tab-pane fade" id="tab-model">
+                        <h3>View Manipulation</h3>
+                        <p>You can interactively adjust the 3D view of the model using a <strong>mouse</strong>,
+                            <strong>pen</strong> or <strong>stylus</strong>, or by <strong>touch</strong> on a tablet or phone.
+                            You can also use the items in the <strong>3D View Settings</strong> popup.</p>
+                        <dl class="instructions">
+                            <dt>Rotation:</dt>
+                            <dd>Drag with the <kbd>left/right button</kbd> or a <kbd>single finger</kbd>,
+                                <br />or use the <kbd>arrow</kbd> keys.</dd>
+                            <dt>Panning:</dt>
+                            <dd>Drag with the <kbd>middle button</kbd> or <kbd>two/three fingers</kbd>,
+                                <br />or use the <kbd>A</kbd> and <kbd>D</kbd> keys.</dd>
+                            <dt>Zooming:</dt>
+                            <dd>Use the <kbd>scroll wheel</kbd> or <kbd>pinch with two fingers</kbd>,
+                                <br />or use the <kbd>W</kbd> and <kbd>S</kbd> keys.</dd>
+                        </dl>
+                        <hr />
+                        <p>NOTE: You can use the <kbd>Shift</kbd> and <kbd>Ctrl/Meta</kbd> keys to adjust the increment
+                            of each scroll event or key press.</p>
+                    </div>
+                    <div class="tab-pane fade" id="tab-data">
+                        <h3>Keyboard Modifiers</h3>
+                        <p>The <kbd>Shift</kbd> and <kbd>Ctrl/Meta</kbd> keys are used pretty extensively
+                            to modify interactive data entry. This applies to all increment buttons, scroll wheel motion,
+                            slider controls and input elements.</p>
+                        <dl class="instructions">
+                            <dt>Shift Key:</dt>
+                            <dd>Increases input to larger values, usually by ten times or significantly larger increments
+                                such as 1 month for dates and 1 hour for times.</dd>
+                            <dt>Ctrl or Meta Key:</dt>
+                            <dd>Decreases input to smaller values, usually by one tenth or the smallest reasonable increment
+                                such as 1 day for dates or 1 minute for times.</dd>
+                        </dl>
+                        <hr />
+                        <p>NOTE: You can use the <kbd>scroll wheel</kbd> to edit a data value when hovering over any slider,
+                            numeric input or even table rows that indicate their editibility.</p>
+                    </div>
+                    <div class="tab-pane fade scroll-pane" id="tab-credits">
+                        <h3>Credits</h3>
+                        <p>This page uses the following frameworks/components:</p>
+                        <p><strong>Bootstrap </strong> &nbsp;<small>v3.3.2</small>
+                            <br />Copyright &copy; 2011-2015 Twitter, Inc. - github.com/twbs,
+                            <br /><a href="http://getbootstrap.com/" target="_blank">http://getbootstrap.com/</a>
+                            &nbsp; (<a href="https://github.com/twbs/bootstrap/blob/master/LICENSE" target="_blank">LICENSE</a>)
+                        </p>
+                        <p><strong>Bootstrap-popover-x</strong> &nbsp;<small>v1.4.0</small>
+                            <br />Copyright &copy; 2014, Kartik Visweswaran, Krajee.com,
+                            <br /><a href="https://github.com/kartik-v/bootstrap-popover-x" target="_blank">https://github.com/kartik-v/bootstrap-popover-x</a>
+                            &nbsp; (<a href="https://github.com/kartik-v/bootstrap-popover-x/blob/master/LICENSE.md" target="_blank">LICENSE</a>)
+                        </p>
+                        <p><strong>D3.js</strong>
+                            <br />Copyright &copy; 2010-2015, Michael Bostock
+                            <br /><a href="http://d3js.org" target="_blank">http://d3js.org</a>
+                            &nbsp; (<a href="https://github.com/mbostock/d3/blob/master/LICENSE" target="_blank">LICENSE</a>)
+                        </p>
+                        <p><strong>jQuery</strong> &nbsp;<small>v1.11.2</small>
+                            <br />Copyright &copy; <a href="https://jquery.org/" target="_blank">jQuery Foundation</a> and other contributors,
+                            <br /><a href="https://jquery.com/" target="_blank">https://jquery.com/</a>
+                            &nbsp; (<a href="https://github.com/jquery/jquery/blob/master/LICENSE.txt" target="_blank">LICENSE</a>)
+                        </p>
+                        <p><strong>JSON Editor</strong>
+                            <br />Copyright &copy; 2015 Jos de Jong - github.com/josdejong
+                            <br /><a href="https://github.com/josdejong/jsoneditor/" target="_blank">https://github.com/josdejong/jsoneditor/</a>
+                            &nbsp; (<a href="https://github.com/josdejong/jsoneditor/blob/master/LICENSE" target="_blank">LICENSE</a>)
+                        </p>
+                        <p><strong>JSURL</strong>
+                            <br />Copyright &copy; 2011 Bruno Jouhier - github.com/Sage
+                            <br /><a href="https://github.com/Sage/jsurl/" target="_blank">https://github.com/Sage/jsurl/</a>
+                            &nbsp; (<a href="https://en.wikipedia.org/wiki/MIT_License" target="_blank">LICENSE</a>)
+                        </p>
+                        <p><strong>KnockoutJS</strong> &nbsp;<small>v3.2.0</small>
+                            <br />Copyright &copy; Steven Sanderson and the Knockout.js team,
+                            <br /><a href="http://knockoutjs.com/" target="_blank">http://knockoutjs.com/</a>
+                            &nbsp; (<a href="https://github.com/knockout/knockout/blob/master/LICENSE" target="_blank">LICENSE</a>)
+                        </p>
+                        <p><strong>Knockstrap</strong> &nbsp;<small>v1.2.0</small>
+                            <br />Copyright &copy; 2013 Artem Stepanyuk - github.com/faulknercs,
+                            <br /><a href="http://faulknercs.github.io/Knockstrap/" target="_blank">http://faulknercs.github.io/Knockstrap/</a>
+                            &nbsp; (<a href="https://github.com/faulknercs/Knockstrap/blob/master/LICENSE.txt" target="_blank">LICENSE</a>)
+                        </p>
+                        <p><strong>Leaflet Maps API</strong> &nbsp;<small>v1.4.0</small>
+                            <br />Copyright &copy; Cloudmade, Vladimir Agafonkin - github.com/Leaflet,
+                            <br /><a href="https://leafletjs.com/" target="_blank">https://leafletjs.com/</a>
+                            &nbsp; (<a href="https://github.com/Leaflet/Leaflet/blob/master/LICENSE" target="_blank">LICENSE</a>)
+                        </p>
+                        <p><strong>OpenStreetMap Map Data</strong>
+                            <br />Copyright &copy; OpenStreetMap contributors - openstreetmap.org,
+                            <br /><a href="https://www.openstreetmap.org/about" target="_blank">https://www.openstreetmap.org/about</a>
+                            &nbsp; (<a href="https://www.openstreetmap.org/copyright" target="_blank">LICENSE</a>)
+                        </p>
+                        <p><strong>SnackbarJS</strong>
+                            <br />Copyright &copy; 2014 Federico Zivolo - github.com/FezVrasta
+                            <br /><a href="http://fezvrasta.github.io/snackbarjs/" target="_blank">http://fezvrasta.github.io/snackbarjs/</a>
+                            &nbsp; (<a href="https://github.com/FezVrasta/snackbarjs/blob/master/LICENSE.md" target="_blank">LICENSE</a>)
+                        </p>
+                        <p><strong>split-pane.js</strong>
+                            <br />Copyright &copy; 2014 Simon Hagström - github.com/shagstrom
+                            <br /><a href="https://github.com/shagstrom/split-pane" target="_blank">https://github.com/shagstrom/split-pane/</a>
+                            &nbsp; (<a href="https://github.com/shagstrom/split-pane/blob/master/LICENSE" target="_blank">LICENSE</a>)
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div> <!-- /PopoverX: Info -->
+
+    </div> <!-- #popover-container -->
+
+    <!--
+    /////////////////////////////////////////////////////////////////
+    // HIDDEN MODAL DIALOGS                                        //
+    /////////////////////////////////////////////////////////////////
+    -->
+
+    <!-- Hidden Modals -->
+    <div id="modal-container">
+
+        <!-- SaveFile dialog -->
+        <div id="modal-save" class="modal fade" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <form  data-bind="submit: SaveAs.submitFile">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            <h4 class="modal-title" data-bind="html: SaveAs.title"></h4>
+                        </div>
+                        <div class="modal-body">
+                            <p class="bold" data-bind="html: SaveAs.message"></p>
+                            <input type="text" class="form-control dropdown-toggle" data-bind="value: SaveAs.filename">
+                            <div id="modal-save-collapse" class="collapse" role="panel" aria-labelledby="modal-save-toggle" style="margin-top: 12px">
+                                <p class="text-justify small">
+                                    Unfortunately most browsers automatically download remotely generated files into a default location, typically a 'Downloads' folder in your user area, and do not let you overwrite existing files. This is why a new filename appears above every time you see this dialog.</p>
+                                <p class="text-justify small margin-bot-4px">
+                                    If you would like to see a File Save As dialog, you need to specifically set your browser to prompt you for the location of each download within its advanced settings.</p>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <div class="pull-left bold">
+                                <a id="modal-save-toggle" role="button" data-toggle="collapse" href="#modal-save-collapse" aria-expanded="true" aria-controls="modal-save-collapse">Why no File Save As dialog ?</a>
+                            </div>
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                            <button type="submit" class="btn btn-primary" data-bind="html: SaveAs.title">Save File</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div><!-- /SaveFile dialog -->
+
+        <!-- Copy/Paste dialog -->
+        <div class="modal fade" id="modal-data" tabindex="-1" role="dialog" aria-labelledby="modal-data-title" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="modal-data-title">Edit Settings as JSON</h4>
+                    </div>
+                    <div class="modal-body" style="padding: 0">
+                        <div id="jsoneditor-container" class="editor-height">
+                            <iframe id="jsoneditor" marginwidth="0" marginheight="0" frameborder="0" vspace="0" hspace="0" style="width: 100%; height: 100%">
+                            </iframe>
+                        </div>
+                        <form class="hidden">
+                            <textarea id="modal-data-text" style="display:none" class="form-control vert-resize" rows="10" data-bind="textInput: Manager.paramData"></textarea>
+                            <input id="modal-data-file" type="file" multiple
+                                   accept="text/*,application/json,.obj,.mtl" style="display:none"
+                                   onchange="App.Manager.importFile(this.files)"
+                                   />
+                        </form>
+                        <div id="modal-data-alert" class="alert alert-danger alert-dismissible hidden" style="margin: 0; border-radius: 0;" role="alert">
+                            <pre id="modal-data-error"></pre>
+                        </div>
+                        <div id="file-drop-box" class="file-drop-box text-center">
+                            <span id="file-drop-box-label"></span>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <div class="btn-group pull-left no-select" role="group">
+                            <button type="button" class="btn btn-default" data-bind="click: Manager.showTextMode" title="Edit as text" aria-label="Text">
+                              <span class="glyphicon glyphicon-text-background" aria-hidden="true"></span> Text
+                            </button>
+                            <button type="button" class="btn btn-default" data-bind="click: Manager.shareParamDataAsURI" title="Create shareable link" aria-label="to URI">
+                              <span class="glyphicon glyphicon-share" aria-hidden="true"></span> Share
+                            </button>
+                        </div>
+                        <div class="pull-right">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                            <button type="button" class="btn btn-primary" data-bind="click: Manager.parseParamData, enable: Manager.paramDataChanged">Read Data</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div><!-- /Copy/Paste dialog -->
+
+        <!-- SolarTables dialog -->
+        <div class="modal fade" id="modal-solar-table" tabindex="-1" role="dialog" aria-labelledby="modal-solar-table-title" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="modal-solar-table-title" data-bind="text: Manager.tableTitle"></h4>
+                        <p class="small italic margin-bot-none" data-bind="html: Manager.tableSubTitle"></p>
+                    </div>
+
+                    <div class="modal-body small" style="padding: 0">
+                        <div id="solar-table-container" style="max-height: 70vh; overflow-y: auto">
+                            <table id="solar-table" class="table table-condensed table-bordered table-striped margin-none" data-bind="table: { columns: Manager.tableCols, header: Manager.tableHeader, data: Manager.tableData, headerClass: 'text-center', dataClass: 'text-center' }"></table>
+                            <p class="italic text-muted text-left pad-5px">
+                                Azimuth angles are calculated in a clockwise direction from due North.<br />
+                                Horizonal angles are taken anti-clockwise from the positive X-axis of the model.<br />
+                                Created by Sunpath3D v1.0 (andrewmarsh.com).
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <div class="btn-group pull-left no-select" role="group">
+                            <form class="form-inline">
+                                <select name="minutes" id="input-minutes" class="form-control margin-none" data-bind="numeric: Manager.tableMinutes, visible: Manager.tableMinutesShow">
+                                    <option value="1">1 Minute</option>
+                                    <option value="5">5 Minutes</option>
+                                    <option value="10">10 Minutes</option>
+                                    <option value="15">15 Minutes</option>
+                                    <option value="20">20 Minutes</option>
+                                    <option value="30">30 Minutes</option>
+                                    <option value="60">1 Hour</option>
+                                </select>
+                                <div class="btn-group no-select" role="group" data-bind="visible: Manager.tableMinutesShow">
+                                    <button type="button" class="btn btn-default" data-bind="click: Manager.tablePrevDay" title="Previous day">
+                                        <span class="glyphicon glyphicon-chevron-left"></span>
+                                    </button>
+                                    <button type="button" class="btn btn-default" data-bind="click: Manager.tableNextDay" title="Next day">
+                                        <span class="glyphicon glyphicon-chevron-right"></span>
+                                    </button>
+                                </div>
+                                <div class="checkbox">
+                                    <label><input type="checkbox" data-bind="checked: Manager.tableFixedHeader">&nbsp; Fixed Header</label>
+                                </div>
+                            </form>
+                        </div>
+                        <button type="button" class="btn btn-default" data-dismiss="modal">
+                            Close
+                        </button>
+                        <button type="button" class="btn btn-default" data-dismiss="modal" data-bind="click: Manager.showExportSolarData">
+                            <span class="glyphicon glyphicon-save" aria-hidden="true"></span>
+                            &nbsp;Save as CSV...
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div><!-- /SolarTables dialog -->
+
+    </div> <!-- /Hidden Modals -->
+
+    <!--
+    /////////////////////////////////////////////////////////////////
+    // EXTERNAL LIBRARIES                                          //
+    /////////////////////////////////////////////////////////////////
+    -->
+
+    <!-- Include latest jQuery -->
+    <!-- script type="text/javascript" src="./js/jquery-1.11.2.min.js?vpd-10303"></script -->
+    <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.2.min.js"></script>
+
+    <!-- Include Leaflet Maps library -->
+    <script type="text/javascript" src="https://unpkg.com/leaflet@1.4.0/dist/leaflet.js" crossorigin=""></script>
+    <script type="text/javascript" src="https://unpkg.com/leaflet-control-geocoder@1.9.0/dist/Control.Geocoder.min.js"></script>
+
+    <!-- Include latest Bootstrap -->
+    <!-- script type="text/javascript" src="./js/bootstrap-3.3.2.min.js?vpd-10303"></script -->
+    <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+
+    <!-- Include latest Knockout and Boostrap bindings -->
+    <!-- script type="text/javascript" src="./js/knockout-3.4.0.min.js?vpd-10303"></script -->
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.4.0/knockout-min.js"></script>
+
+    <!-- Include D3 chart libraries -->
+    <!-- script type="text/javascript" src="./js/d3-3.5.5.min.js?vpd-10303"></script -->
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
+
+    <!-- Include Bootstrap and Knockout plugins -->
+    <script type="text/javascript" src="./js/merged-bs-and-ko-utils.min.js?vpd-10303"></script>
+
+    <!-- Include split-pane functions -->
+    <script type="text/javascript" src="./js/split-pane.min.js?vpd-10303"></script>
+
+    <!--
+    /////////////////////////////////////////////////////////////////
+    // FINALISE PAGE AND BIND VIEW MODELS                          //
+    /////////////////////////////////////////////////////////////////
+    -->
+
+    <script type="text/javascript" src="./sunpath3d-core.min.js?vpd-10161"></script>
+    <script type="text/javascript" src="./sunpath3d-opts.min.js?vpd-10161"></script>
+    <script type="text/javascript" src="./sunpath3d.min.js?vpd-10161"></script>
+
+    <!--
+    /////////////////////////////////////////////////////////////////
+    // DONE.                                                       //
+    /////////////////////////////////////////////////////////////////
+    -->
+
+</body>
+
+</html>
